@@ -35,7 +35,7 @@
                     </div>
                 </div>
                 <form method="get" action="recherche.php" class="d-flex w-50 m-auto">
-                    <input class="form-control me-2 rounded-pill" type="search" placeholder="" aria-label="Search" >
+                    <input class="form-control me-2 rounded-pill" type="search" name="research" placeholder="" aria-label="Search" >
                 </form>
                 <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-5">
                     <button class="btn btn-secondary">Recherche Google</button>
