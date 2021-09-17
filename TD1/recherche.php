@@ -1,4 +1,4 @@
-<html>
+<html lang="fr">
 
 <?php
 $research = $_GET['research'];
