@@ -25,6 +25,4 @@ echo '<br>';
 echo 'Host information: '.$mysqli->host_info;
 echo '<br>';
 echo 'Protocol version: '.$mysqli->protocol_version;
-include 'index.php';
-$mysqli->close();
 ?>

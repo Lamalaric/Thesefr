@@ -1,6 +1,6 @@
 <?php
 
-class these
+class These
 {
     private $auteur;
     private $id_auteur;
