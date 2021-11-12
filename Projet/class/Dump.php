@@ -18,7 +18,6 @@ class Dump
                 $these = new These($data[0], $data[1], $data[2], $data[3], $data[4], $data[5], $data[6], $data[7], $data[8], $data[9], date('Y-m-d',strtotime($data[10])), date('Y-m-d',strtotime($data[11])), $data[12], $data[13], $data[14], date('Y-m-d',strtotime($data[15])), date('Y-m-d',strtotime($data[16])));
                 $theseList[] = $these;
             }
-            // print_r($theseList[2]);
             fclose($handle);
         }
         return $theseList;

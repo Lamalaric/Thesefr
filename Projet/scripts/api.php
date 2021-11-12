@@ -6,7 +6,21 @@
 
 <?php
 //include('../class/Dump.php');
-include('../connexion.php');
+//include('../connexion.php');
+//Remove le warning du port
+error_reporting(E_ALL ^ E_WARNING);
+
+$db_host = 'sqletud.u-pem.fr';
+$db_user = 'leforestier';
+$db_password = 'Chaton2402.';
+$db_db = 'leforestier_db';
+
+try {
+    $dbh = new PDO('mysql:host='.$db_host.';dbname='.$db_db.';charset=utf8;port=3306', $db_user, $db_password);
+} catch (PDOException $e) {
+    print "Erreur !: " . $e->getMessage() . "<br/>";
+    die();
+}
 ?>
 
 <!DOCTYPE html>
@@ -39,6 +53,7 @@ include('../connexion.php');
     </section>
     <section class="results">
         <?php
+
         //Résultat de la recherche
         if (isset($_POST['searchbar'])) {
             echo '
@@ -65,14 +80,47 @@ include('../connexion.php');
                     </thead>
                     <tbody>
                  ';
+
+
+            /* Exécute une requête préparée en passant un tableau de valeurs */
+            $sth = $dbh->prepare('SELECT * FROM these;');
+            $sth->bindParam(":recherche", $_POST['searchbar']);
+
+            // Insertion de la requête SQL dans la BDD
+            if ($sth->execute()) {
+                //Si ça se passe bien alors on crée la ligne du tableau comme au-dessus.
+                $result = $sth->fetchAll();
+                foreach ($result as $row) {
+                    //On affiche les lignes une par une dans le tableau
+                    echo '
+                    <tr>
+                        <th>'.$row["titre"].'</th>
+                        <th>'.$row["auteur"].'</th>
+                        <th>'.$row["directeur_these_pn"].'</th>
+                        <th>'.$row["etablissement_soutenance"].'</th>
+                        <th>'.$row["discipline"].'</th>
+                        <th>'.$row["statut"].'</th>
+                        <th>'.$row["date_inscription"].'</th>
+                        <th>'.$row["date_soutenance"].'</th>
+                        <th>'.$row["date_publication_site"].'</th>
+                        <th>'.$row["date_maj_site"].'</th>
+                    </tr>
+                    ';
+                }
+            } else {
+                echo "<br>Une erreur est survenue sur la requête numéro xxx";
+            }
+            echo '</tbody></table>';
+
+
+
             //On récupère toutes les thèses comportant le résultat de la recherche dans "auteur"
-            $query = "SELECT * FROM these WHERE LOWER(auteur) LIKE LOWER('%".$_POST['searchbar']."%');";
+            /*$query = "SELECT * FROM these;";
             $result = $mysqli->query($query);
 
             $rows = $result->fetch_all(MYSQLI_ASSOC);
             foreach ($rows as $row) {
                 //On affiche les lignes une par une dans le tableau
-//                echo $row["auteur"]."<br>";
                 echo '
                     <tr>
                         <th>'.$row["titre"].'</th>
@@ -87,21 +135,8 @@ include('../connexion.php');
                         <th>'.$row["date_maj_site"].'</th>
                     </tr>
                     ';
-            }
+            }*/
 
-            $query = "SELECT * FROM these WHERE LOWER(auteur) LIKE LOWER(?);";
-            $req = $mysqli->prepare($query);
-            $req->bind_param("s", $_POST['searchbar']);
-            // Insertion de la requête SQL dans la BDD
-            if ($req->execute()) {
-                //Si ça se passe bien alors on créer la ligne du tableau comme au dessus.
-                //C'est la méthode à utiliser (prepare), donc on enlevera ce qu'il y a avant
-                echo "<br>La requête numéro à correctement été effectuée.";
-            } else {
-                echo "<br>Une erreur est survenue sur la requête numéro xxx";
-            }
-
-            echo '</tbody></table>';
         }
         ?>
     </section>

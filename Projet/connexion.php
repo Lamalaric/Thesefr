@@ -1,29 +1,17 @@
 <?php
-$db_host = '127.0.0.1';
-$db_user = 'root';
-$db_password = '';
-$db_db = 'projet';
-$db_port = 3306;
+//Remove le warning du port
+error_reporting(E_ALL ^ E_WARNING);
 
-$mysqli = new mysqli(
-    $db_host,
-    $db_user,
-    $db_password,
-    $db_db,
-    $db_port
-);
+$db_host = 'sqletud.u-pem.fr';
+$db_user = 'leforestier';
+$db_password = 'Chaton2402.';
+$db_db = 'leforestier_db';
 
-if ($mysqli->connect_error) {
-    echo 'Errno: '.$mysqli->connect_errno;
-    echo '<br>';
-    echo 'Error: '.$mysqli->connect_error;
-    exit();
+try {
+    $dbh = new PDO('mysql:host='.$db_host.';dbname='.$db_db.';charset=utf8;port=3306', $db_user, $db_password);
+    $dbh = null;
+} catch (PDOException $e) {
+    print "Erreur !: " . $e->getMessage() . "<br/>";
+    die();
 }
-/*
-echo 'Success: A proper connection to MySQL was made.';
-echo '<br>';
-echo 'Host information: '.$mysqli->host_info;
-echo '<br>';
-echo 'Protocol version: '.$mysqli->protocol_version;
-*/
 ?>

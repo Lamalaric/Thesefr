@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="IUT" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="IUT">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/WWW/Thesefr" local="$PROJECT_DIR$" web="/Thesefr/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>
