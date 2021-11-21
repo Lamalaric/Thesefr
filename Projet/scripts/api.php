@@ -83,7 +83,7 @@ try {
 
 
             /* Exécute une requête préparée en passant un tableau de valeurs */
-            $sth = $dbh->prepare('SELECT * FROM these;');
+            $sth = $dbh->prepare('SELECT * FROM these WHERE auteur LIKE '%Saeed%';');
             $sth->bindParam(":recherche", $_POST['searchbar']);
 
             // Insertion de la requête SQL dans la BDD

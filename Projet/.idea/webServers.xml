@@ -2,7 +2,7 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="c32b68ef-10d5-4249-bcac-88494e747ff3" name="IUT" url="https://etudiant.u-pem.fr/~leforestier/">
+      <webServer id="c32b68ef-10d5-4249-bcac-88494e747ff3" name="Thesesfr" url="https://etudiant.u-pem.fr/~leforestier/">
         <fileTransfer rootFolder="/home/3in2/leforestier" accessType="SFTP" host="linuxpedago.u-pem.fr" port="22" sshConfigId="213aba2b-e25a-4a94-ad84-b8a4abd2dc46" sshConfig="leforestier@linuxpedago.u-pem.fr:22 password">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />

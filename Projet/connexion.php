@@ -4,7 +4,7 @@ error_reporting(E_ALL ^ E_WARNING);
 
 $db_host = 'sqletud.u-pem.fr';
 $db_user = 'leforestier';
-$db_password = 'Chaton2402.';
+$db_password = '';
 $db_db = 'leforestier_db';
 
 try {
