@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="7e19a832-36da-4c1a-847e-742b39c69a39" name="Thesesfr" url="http://etudiant.u-pem.fr/~leforestier/">
+        <fileTransfer rootFolder="/home/3in2/leforestier" accessType="SFTP" host="linuxpedago.u-pem.fr" port="22" sshConfigId="7efb12c4-92e2-4b0b-bdd5-0a16871c9798" sshConfig="leforestier@linuxpedago.u-pem.fr:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

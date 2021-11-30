@@ -30,6 +30,32 @@ try {
     <meta name="author" content="Amalaric Le Forestier" />
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../styles/style.css" type="text/css" />
+    <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    <script>
+        let columnDefs = [
+            {headerName: "Make", field: "make"},
+            {headerName: "Model", field: "model"},
+            {headerName: "Price", field: "price"}
+        ];
+
+
+        let rowData = <?php
+            $test = array(0=> array("make"=>"toto", "model"=>"titi", "price"=>"tata"));
+            echo json_encode($test);
+        ?>;
+
+        // let the grid know which columns and what data to use
+        let gridOptions = {
+            columnDefs: columnDefs,
+            rowData: rowData
+        };
+
+        // setup the grid after the page has finished loading
+        document.addEventListener('DOMContentLoaded', function() {
+            let gridDiv = document.querySelector('#myGrid');
+            new agGrid.Grid(gridDiv, gridOptions);
+        });
+    </script>
 </head>
 
 <body>
@@ -53,9 +79,8 @@ try {
     </section>
     <section class="results">
         <?php
-
         //Résultat de la recherche
-        if (isset($_POST['searchbar'])) {
+        /*if (isset($_POST['searchbar'])) {
             echo '
                 <table>
                     <caption>Résultat de la recherche</caption>
@@ -82,7 +107,7 @@ try {
                  ';
 
 
-            /* Exécute une requête préparée en passant un tableau de valeurs */
+            //Exécute une requête préparée en passant un tableau de valeurs
             $sth = $dbh->prepare('SELECT * FROM these WHERE auteur LIKE '%Saeed%';');
             $sth->bindParam(":recherche", $_POST['searchbar']);
 
@@ -115,8 +140,8 @@ try {
 
 
             //On récupère toutes les thèses comportant le résultat de la recherche dans "auteur"
-            /*$query = "SELECT * FROM these;";
-            $result = $mysqli->query($query);
+            $query = "SELECT * FROM these;";
+            $result = $dbh->query($query);
 
             $rows = $result->fetch_all(MYSQLI_ASSOC);
             foreach ($rows as $row) {
@@ -135,10 +160,12 @@ try {
                         <th>'.$row["date_maj_site"].'</th>
                     </tr>
                     ';
-            }*/
-
-        }
+            }
+        }*/
         ?>
+
+        <div id="myGrid" style="height: 200px; width:500px;"></div>
+
     </section>
 </main>
 
