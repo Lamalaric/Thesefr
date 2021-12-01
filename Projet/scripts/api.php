@@ -31,31 +31,6 @@ try {
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../styles/style.css" type="text/css" />
     <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
-    <script>
-        let columnDefs = [
-            {headerName: "Make", field: "make"},
-            {headerName: "Model", field: "model"},
-            {headerName: "Price", field: "price"}
-        ];
-
-
-        let rowData = <?php
-            $test = array(0=> array("make"=>"toto", "model"=>"titi", "price"=>"tata"));
-            echo json_encode($test);
-        ?>;
-
-        // let the grid know which columns and what data to use
-        let gridOptions = {
-            columnDefs: columnDefs,
-            rowData: rowData
-        };
-
-        // setup the grid after the page has finished loading
-        document.addEventListener('DOMContentLoaded', function() {
-            let gridDiv = document.querySelector('#myGrid');
-            new agGrid.Grid(gridDiv, gridOptions);
-        });
-    </script>
 </head>
 
 <body>
@@ -164,7 +139,65 @@ try {
         }*/
         ?>
 
-        <div id="myGrid" style="height: 200px; width:500px;"></div>
+        <div class="grid-wrapper">
+            <div id="myGrid" class="ag-theme-material"></div>
+        </div>
+
+
+        <script>
+            let columnDefs = [
+                {field: "Titre"},
+                {field: "Auteur"},
+                {field: "Directeur"},
+                {field: "Établissement"},
+                {field: "Discipline"},
+                {field: "Statut"},
+                {field: "Date inscription"},
+                {field: "Date de soutenance"},
+                {field: "Publié le"},
+                {field: "Mis à jour le"},
+            ];
+
+
+            let rowData = <?php
+                $test = array(0=> array("Titre"=>"Le credit documentaire et l'onopposabilite des exceptions",
+                    "Auteur"=>"Saeed Al marri",
+                    "Directeur"=>"Philippe Delebecque",
+                    "Établissement"=>"Paris 1",
+                    "Discipline"=>"Driot prive",
+                    "Statut"=>"enCours",
+                    "Date inscription"=>"2011-09-30",
+                    "Date de soutenance"=>"1970-01-01",
+                    "Publié le"=>"2012-01-26",
+                    "Mis à jour le"=>"2012-01-26",));
+                echo json_encode($test);
+                ?>;
+
+            // let the grid know which columns and what data to use
+            let gridOptions = {
+                columnDefs: columnDefs,
+                defaultColDef: {
+                    flex: 1,
+                    minWidth: 150,
+                    filter: true,
+                    sortable: true,
+                    resizable: true,
+                },
+
+                rowData: rowData,
+
+                rowGroupPanelShow: 'always',
+                pagination: true,
+                overlayLoadingTemplate:
+                    '<span class="ag-overlay-loading-center">Please wait while your rows are loading</span>',
+            };
+
+            // setup the grid after the page has finished loading
+            document.addEventListener('DOMContentLoaded', function() {
+                let gridDiv = document.querySelector('#myGrid');
+                new agGrid.Grid(gridDiv, gridOptions);
+            });
+        </script>
 
     </section>
 </main>
