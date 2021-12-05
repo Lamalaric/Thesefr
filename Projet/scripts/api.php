@@ -1,10 +1,4 @@
 <?php
-
-// Par exemple : nom='bibi'   -->    affiche toutes les theses au nom de bibi.
-
-?>
-
-<?php
 //include('../class/Dump.php');
 //include('../connexion.php');
 //Remove le warning du port
@@ -31,6 +25,7 @@ try {
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../styles/style.css" type="text/css" />
     <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.src.js"></script>
 </head>
 
 <body>

@@ -40,6 +40,7 @@ try {
 <main>
     <div>
         <?php
+        set_time_limit(0);
         $file_to_read = "../docs/dump_abes_thesesfr.csv";
 
         // On lit le fichier CSV, on stocke dans une liste toutes les thèses
@@ -48,11 +49,18 @@ try {
 
         // VERIFIER SI CHAQUE LIGNE EST BIEN FORMATÉE
         for ($i=1, $iMax = count($allTheses); $i< $iMax; $i++) {
+            //Une thèse contient au minimum : Auteur / Titre / Discipline
+            if ($allTheses[$i]->getAuteur() != "" && $allTheses[$i]->getTitre() != "" && $allTheses[$i]->getDiscipline() != "") {
+                continue;
+            }
             $auteur = $allTheses[$i]->getAuteur();
             $id_auteur = $allTheses[$i]->getIdAuteur();
             $titre = $allTheses[$i]->getTitre();
             $directeur_these_pn = $allTheses[$i]->getDirecteurThesePn();
             $directeur_these_np = $allTheses[$i]->getDirecteurTheseNp();
+            if ($allTheses[$i]->getIdDirecteur() == ",") {
+                $id_directeur = "";
+            }
             $id_directeur = $allTheses[$i]->getIdDirecteur();
             $etablissement_soutenance = $allTheses[$i]->getEtablissementSoutenance();
             $id_etablissement = $allTheses[$i]->getIdEtablissement();
@@ -66,7 +74,7 @@ try {
             $date_publication_site = $allTheses[$i]->getDatePublicationSite();
             $date_maj_site = $allTheses[$i]->getDateMajSite();
             // Requête préparée
-            $sql = "INSERT INTO these VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            $sql = "INSERT INTO these2 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             $req = $dbh->prepare($sql);
             $req->bindParam("sssssssssssssssss", $auteur, $id_auteur, $titre, $directeur_these_pn, $directeur_these_np, $id_directeur, $etablissement_soutenance, $id_etablissement, $discipline, $statut, $date_inscription, $date_soutenance, $langue_these, $id_these, $accessible_online, $date_publication_site, $date_maj_site);
             // Insertion de la requête SQL dans la BDD
