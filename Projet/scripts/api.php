@@ -159,7 +159,39 @@ try {
             ];
 
 
+            //Ajout d'une ligne
             let rowData = <?php
+
+                //Exécute une requête préparée en passant un tableau de valeurs
+                $sth = $dbh->prepare('SELECT * FROM these WHERE auteur LIKE '%Saeed%';');
+                $sth->bindParam(":recherche", $_POST['searchbar']);
+
+                // Insertion de la requête SQL dans la BDD
+                if ($sth->execute()) {
+                    //Si ça se passe bien alors on crée la ligne du tableau comme au-dessus.
+                    $result = $sth->fetchAll();
+                    foreach ($result as $row) {
+                        //On affiche les lignes une par une dans le tableau
+                        echo '
+                    <tr>
+                        <th>'.$row["titre"].'</th>
+                        <th>'.$row["auteur"].'</th>
+                        <th>'.$row["directeur_these_pn"].'</th>
+                        <th>'.$row["etablissement_soutenance"].'</th>
+                        <th>'.$row["discipline"].'</th>
+                        <th>'.$row["statut"].'</th>
+                        <th>'.$row["date_inscription"].'</th>
+                        <th>'.$row["date_soutenance"].'</th>
+                        <th>'.$row["date_publication_site"].'</th>
+                        <th>'.$row["date_maj_site"].'</th>
+                    </tr>
+                    ';
+                    }
+                } else {
+                    echo "<br>Une erreur est survenue sur la requête numéro xxx";
+                }
+                echo '</tbody></table>';
+
                 $test = array(0=> array("Titre"=>"Le credit documentaire et l'onopposabilite des exceptions",
                     "Auteur"=>"Saeed Al marri",
                     "Directeur"=>"Philippe Delebecque",
@@ -173,7 +205,6 @@ try {
                 echo json_encode($test);
                 ?>;
 
-            // let the grid know which columns and what data to use
             let gridOptions = {
                 columnDefs: columnDefs,
                 defaultColDef: {
