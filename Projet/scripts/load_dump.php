@@ -1,6 +1,20 @@
 <?php
 include('../class/Dump.php');
-include('../connexion.php');
+//Remove le warning du port
+error_reporting(E_ALL ^ E_WARNING);
+
+$db_host = 'sqletud.u-pem.fr';
+$db_user = 'leforestier';
+$db_password = '';
+$db_db = 'leforestier_db';
+
+try {
+    $dbh = new PDO('mysql:host='.$db_host.';dbname='.$db_db.';charset=utf8;port=3306', $db_user, $db_password);
+    $dbh = null;
+} catch (PDOException $e) {
+    print "Erreur !: " . $e->getMessage() . "<br/>";
+    die();
+}
 ?>
 
 <!DOCTYPE html>
@@ -53,8 +67,8 @@ include('../connexion.php');
             $date_maj_site = $allTheses[$i]->getDateMajSite();
             // Requête préparée
             $sql = "INSERT INTO these VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-            $req = $mysqli->prepare($sql);
-            $req->bind_param("sssssssssssssssss", $auteur, $id_auteur, $titre, $directeur_these_pn, $directeur_these_np, $id_directeur, $etablissement_soutenance, $id_etablissement, $discipline, $statut, $date_inscription, $date_soutenance, $langue_these, $id_these, $accessible_online, $date_publication_site, $date_maj_site);
+            $req = $dbh->prepare($sql);
+            $req->bindParam("sssssssssssssssss", $auteur, $id_auteur, $titre, $directeur_these_pn, $directeur_these_np, $id_directeur, $etablissement_soutenance, $id_etablissement, $discipline, $statut, $date_inscription, $date_soutenance, $langue_these, $id_these, $accessible_online, $date_publication_site, $date_maj_site);
             // Insertion de la requête SQL dans la BDD
             /*if ($req->execute()) {
                 echo "<br>La requête numéro ".$i." à correctement été effectuée.";

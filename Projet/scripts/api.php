@@ -53,94 +53,13 @@ try {
         </form>
     </section>
     <section class="results">
-        <?php
-        //Résultat de la recherche
-        /*if (isset($_POST['searchbar'])) {
-            echo '
-                <table>
-                    <caption>Résultat de la recherche</caption>
-                    <thead>
-                        <tr>
-                            <th class="empty_cell" colspan="6"></th>
-                            <th colspan="2">Dates</th>
-                            <th colspan="2">Sur these.fr</th>
-                        </tr>
-                        <tr>
-                            <th scope="col">Titre</th>
-                            <th scope="col">Auteur</th>
-                            <th scope="col">Directeur</th>
-                            <th scope="col">Établissement</th>
-                            <th scope="col">Discipline</th>
-                            <th scope="col">Statut</th>
-                            <th scope="col">D\'inscription</th>
-                            <th scope="col">De soutenance</th>
-                            <th scope="col">Publié le</th>
-                            <th scope="col">Mis à jour le</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                 ';
-
-
-            //Exécute une requête préparée en passant un tableau de valeurs
-            $sth = $dbh->prepare('SELECT * FROM these WHERE auteur LIKE '%Saeed%';');
-            $sth->bindParam(":recherche", $_POST['searchbar']);
-
-            // Insertion de la requête SQL dans la BDD
-            if ($sth->execute()) {
-                //Si ça se passe bien alors on crée la ligne du tableau comme au-dessus.
-                $result = $sth->fetchAll();
-                foreach ($result as $row) {
-                    //On affiche les lignes une par une dans le tableau
-                    echo '
-                    <tr>
-                        <th>'.$row["titre"].'</th>
-                        <th>'.$row["auteur"].'</th>
-                        <th>'.$row["directeur_these_pn"].'</th>
-                        <th>'.$row["etablissement_soutenance"].'</th>
-                        <th>'.$row["discipline"].'</th>
-                        <th>'.$row["statut"].'</th>
-                        <th>'.$row["date_inscription"].'</th>
-                        <th>'.$row["date_soutenance"].'</th>
-                        <th>'.$row["date_publication_site"].'</th>
-                        <th>'.$row["date_maj_site"].'</th>
-                    </tr>
-                    ';
-                }
-            } else {
-                echo "<br>Une erreur est survenue sur la requête numéro xxx";
-            }
-            echo '</tbody></table>';
-
-
-
-            //On récupère toutes les thèses comportant le résultat de la recherche dans "auteur"
-            $query = "SELECT * FROM these;";
-            $result = $dbh->query($query);
-
-            $rows = $result->fetch_all(MYSQLI_ASSOC);
-            foreach ($rows as $row) {
-                //On affiche les lignes une par une dans le tableau
-                echo '
-                    <tr>
-                        <th>'.$row["titre"].'</th>
-                        <th>'.$row["auteur"].'</th>
-                        <th>'.$row["directeur_these_pn"].'</th>
-                        <th>'.$row["etablissement_soutenance"].'</th>
-                        <th>'.$row["discipline"].'</th>
-                        <th>'.$row["statut"].'</th>
-                        <th>'.$row["date_inscription"].'</th>
-                        <th>'.$row["date_soutenance"].'</th>
-                        <th>'.$row["date_publication_site"].'</th>
-                        <th>'.$row["date_maj_site"].'</th>
-                    </tr>
-                    ';
-            }
-        }*/
-        ?>
 
         <div class="grid-wrapper">
-            <div id="myGrid" class="ag-theme-material"></div>
+            <div class="buttons">
+                <button onclick="onBtPrint()">Imprimer</button>
+                <button onclick="onBtnExport()">Exporter en csv</button>
+            </div>
+            <div id="myGrid" class="ag-theme-alpine"></div>
         </div>
 
 
@@ -150,59 +69,80 @@ try {
                 {field: "Auteur"},
                 {field: "Directeur"},
                 {field: "Établissement"},
-                {field: "Discipline"},
                 {field: "Statut"},
-                {field: "Date inscription"},
-                {field: "Date de soutenance"},
-                {field: "Publié le"},
-                {field: "Mis à jour le"},
+                {
+                    headerName: 'Dates',
+                    children: [
+                        {field: "Inscription"},
+                        {field: "Soutenance"},
+                        {field: "Publication"}
+                    ]
+                }
             ];
-
 
             //Ajout d'une ligne
             let rowData = <?php
+                //Formate la date en jour/mois/annee
+                function formatDate($date): string
+                {
+                    $date = explode("-", $date);
+                    return $date[2]."/".$date[1]."/".$date[0];
+                }
 
                 //Exécute une requête préparée en passant un tableau de valeurs
-                $sth = $dbh->prepare('SELECT * FROM these WHERE auteur LIKE '%Saeed%';');
-                $sth->bindParam(":recherche", $_POST['searchbar']);
+                $recherche = $_POST['searchbar'];
+                $recherche = "%".$recherche."%";
+                $sth = $dbh->prepare('SELECT * FROM these WHERE auteur LIKE :recherche;');
+                $sth->bindParam(':recherche', $recherche);
 
                 // Insertion de la requête SQL dans la BDD
+                $rows = array();
                 if ($sth->execute()) {
-                    //Si ça se passe bien alors on crée la ligne du tableau comme au-dessus.
+                    //Si ça se passe bien alors on crée la ligne du tableau
                     $result = $sth->fetchAll();
                     foreach ($result as $row) {
-                        //On affiche les lignes une par une dans le tableau
-                        echo '
-                    <tr>
-                        <th>'.$row["titre"].'</th>
-                        <th>'.$row["auteur"].'</th>
-                        <th>'.$row["directeur_these_pn"].'</th>
-                        <th>'.$row["etablissement_soutenance"].'</th>
-                        <th>'.$row["discipline"].'</th>
-                        <th>'.$row["statut"].'</th>
-                        <th>'.$row["date_inscription"].'</th>
-                        <th>'.$row["date_soutenance"].'</th>
-                        <th>'.$row["date_publication_site"].'</th>
-                        <th>'.$row["date_maj_site"].'</th>
-                    </tr>
-                    ';
+                        //Formatage des lignes nécessaires
+                        $toExclude = array(",", ".");
+                        str_replace($toExclude,"", $row[0]);
+                        str_replace($toExclude,"", $row[2]);
+                        if (count(explode("-", $row[10])) == 3) $row[10] = formatDate($row[10]);
+                        if (count(explode("-", $row[11])) == 3) $row[11] = formatDate($row[11]);
+                        if (count(explode("-", $row[15])) == 3) $row[15] = formatDate($row[15]);
+                        if ($row[9]=='enCours') $row[9] = 'En cours';
+                        else if ($row[9]=='soutenue') $row[9] = 'Soutenue';
+                        //Création de la ligne à donner à l'AgGrid
+                        $formatedRow = array(
+                            "Titre"=>$row[2],
+                            "Auteur"=>$row[0],
+                            "Directeur"=>$row[3],
+                            "Établissement"=>$row[6],
+                            "Statut"=>$row[9],
+                            "Inscription"=>$row[10],
+                            "Soutenance"=>$row[11],
+                            "Publication"=>$row[15]
+                        );
+                        array_push($rows, $formatedRow);
                     }
-                } else {
-                    echo "<br>Une erreur est survenue sur la requête numéro xxx";
                 }
-                echo '</tbody></table>';
+                $searchResult = json_encode($rows);
 
-                $test = array(0=> array("Titre"=>"Le credit documentaire et l'onopposabilite des exceptions",
-                    "Auteur"=>"Saeed Al marri",
-                    "Directeur"=>"Philippe Delebecque",
-                    "Établissement"=>"Paris 1",
-                    "Discipline"=>"Driot prive",
-                    "Statut"=>"enCours",
-                    "Date inscription"=>"2011-09-30",
-                    "Date de soutenance"=>"1970-01-01",
-                    "Publié le"=>"2012-01-26",
-                    "Mis à jour le"=>"2012-01-26",));
-                echo json_encode($test);
+                //On écrit dans un .json les lignes retournées
+                $response['posts'] = $rows;
+                $fp = fopen('../docs/results.json', 'w');
+                fwrite($fp, json_encode($rows));
+                fclose($fp);
+
+
+                $emptyRow = array(0=> array(
+                    "Titre"=>"",
+                    "Auteur"=>"",
+                    "Directeur"=>"",
+                    "Établissement"=>"",
+                    "Statut"=>"",
+                    "Inscription"=>"",
+                    "Soutenance"=>"",
+                    "Publication"=>""));
+                echo json_encode($emptyRow);
                 ?>;
 
             let gridOptions = {
@@ -219,17 +159,95 @@ try {
 
                 rowGroupPanelShow: 'always',
                 pagination: true,
+                paginationPageSize: 15,
+                popupParent: document.body,
                 overlayLoadingTemplate:
-                    '<span class="ag-overlay-loading-center">Please wait while your rows are loading</span>',
+                    '<span class="ag-overlay-loading-center">Chargement des lignes...</span>',
+
+                //Chargement des lignes optimisé
+                rowBuffer: 0,
+                rowSelection: 'multiple',
+                // tell grid we want virtual row model type
+                rowModelType: 'infinite',
+                // how big each page in our page cache will be, default is 100
+                cacheBlockSize: 100,
+                // how many extra blank rows to display to the user at the end of the dataset,
+                // which sets the vertical scroll and then allows the grid to request viewing more rows of data.
+                // default is 1, ie show 1 row.
+                cacheOverflowSize: 2,
+                // how many server side requests to send at a time. if user is scrolling lots, then the requests
+                // are throttled down
+                maxConcurrentDatasourceRequests: 1,
+                // how many rows to initially show in the grid. having 1 shows a blank row, so it looks like
+                // the grid is loading from the users perspective (as we have a spinner in the first col)
+                infiniteInitialRowCount: 1000,
+                // how many pages to store in cache. default is undefined, which allows an infinite sized cache,
+                // pages are never purged. this should be set for large data to stop your browser from getting
+                // full of data
+                maxBlocksInCache: 10
             };
+
+            //Fonction pour exporter le tableau en CSV
+            function onBtnExport() {
+                gridOptions.api.exportDataAsCsv();
+            }
+
+            //Fonctions pour imprimer le tableau
+            function onBtPrint() {
+                const api = gridOptions.api;
+
+                setPrinterFriendly(api);
+
+                setTimeout(function () {
+                    print();
+                    setNormal(api);
+                }, 2000);
+            }
+            function setPrinterFriendly(api) {
+                const eGridDiv = document.querySelector('#myGrid');
+                eGridDiv.style.height = '';
+                api.setDomLayout('print');
+            }
+            function setNormal(api) {
+                const eGridDiv = document.querySelector('#myGrid');
+                eGridDiv.style.width = '700px';
+                eGridDiv.style.height = '200px';
+
+                api.setDomLayout(null);
+            }
 
             // setup the grid after the page has finished loading
             document.addEventListener('DOMContentLoaded', function() {
                 let gridDiv = document.querySelector('#myGrid');
                 new agGrid.Grid(gridDiv, gridOptions);
+
+                fetch('../docs/results.json')
+                    .then((response) => response.json())
+                    .then(function (data) {
+                        let dataSource = {
+                            rowCount: null, // behave as infinite scroll
+
+                            getRows: function (params) {
+                                console.log('asking for ' + params.startRow + ' to ' + params.endRow);
+
+                                // At this point in your code, you would call the server, using $http if in AngularJS 1.x.
+                                // To make the demo look real, wait for 500ms before returning
+                                // take a slice of the total rows
+                                let rowsThisPage = data.slice(params.startRow, params.endRow);
+                                // if on or after the last page, work out the last row.
+                                let lastRow = -1;
+                                if (data.length <= params.endRow) {
+                                    lastRow = data.length;
+                                }
+                                // call the success callback
+                                params.successCallback(rowsThisPage, lastRow);
+                            },
+                        };
+
+                        gridOptions.api.setDatasource(dataSource);
+                    });
             });
         </script>
-
     </section>
 </main>
 
