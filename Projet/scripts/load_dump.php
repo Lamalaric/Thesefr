@@ -1,20 +1,19 @@
 <?php
-include('../class/Dump.php');
 //Remove le warning du port
-error_reporting(E_ALL ^ E_WARNING);
+//error_reporting(E_ALL ^ E_WARNING);
 
 $db_host = 'sqletud.u-pem.fr';
 $db_user = 'leforestier';
-$db_password = '';
+$db_password = 'Chaton2402.';
 $db_db = 'leforestier_db';
 
 try {
     $dbh = new PDO('mysql:host='.$db_host.';dbname='.$db_db.';charset=utf8;port=3306', $db_user, $db_password);
-    $dbh = null;
 } catch (PDOException $e) {
     print "Erreur !: " . $e->getMessage() . "<br/>";
     die();
 }
+include('../class/Dump.php');
 ?>
 
 <!DOCTYPE html>
@@ -41,11 +40,14 @@ try {
     <div>
         <?php
         set_time_limit(0);
-        $file_to_read = "../docs/dump_abes_thesesfr.csv";
+        ini_set('memory_limit', '-1');
+        $file_to_read = "../docs/all_theses.csv";
 
         // On lit le fichier CSV, on stocke dans une liste toutes les thèses
         $dump = new Dump();
         $allTheses = $dump->readCSV($file_to_read);
+
+        var_dump($allTheses);
 
         // VERIFIER SI CHAQUE LIGNE EST BIEN FORMATÉE
         for ($i=1, $iMax = count($allTheses); $i< $iMax; $i++) {
@@ -78,16 +80,15 @@ try {
             $req = $dbh->prepare($sql);
             $req->bindParam("sssssssssssssssss", $auteur, $id_auteur, $titre, $directeur_these_pn, $directeur_these_np, $id_directeur, $etablissement_soutenance, $id_etablissement, $discipline, $statut, $date_inscription, $date_soutenance, $langue_these, $id_these, $accessible_online, $date_publication_site, $date_maj_site);
             // Insertion de la requête SQL dans la BDD
-            /*if ($req->execute()) {
-                echo "<br>La requête numéro ".$i." à correctement été effectuée.";
+            if ($req->execute()) {
+                continue;
             } else {
                 echo "<br>Une erreur est survenue sur la requête numéro ".$i;
-            }*/
+            }
         }
-        $req->close();
 
         try {
-            $test = json_encode($allTheses, JSON_THROW_ON_ERROR);
+            $test = json_encode($allTheses);
             $theseArray = json_decode(json_encode($allTheses), true);
         } catch (JsonException $e) {
             echo "tran";

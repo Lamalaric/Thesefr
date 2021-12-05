@@ -1,7 +1,10 @@
 <?php
 include('These.php');
+set_time_limit(0);
+ini_set('memory_limit', '-1');
 class Dump
 {
+
     // Récupération CSV
     // Création these
     // Envoi BDD
