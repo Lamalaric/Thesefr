@@ -56,8 +56,11 @@ try {
 
         <div class="grid-wrapper">
             <div class="buttons">
-                <button onclick="onBtPrint()">Imprimer</button>
-                <button onclick="onBtnExport()">Exporter en csv</button>
+                <button onclick="imprimer()">Imprimer</button>
+                <button onclick="downloadCSV()">Exporter le csv</button>
+                <a href="../docs/results.json" download="Résultats">
+                    <button>Exporter le json</button>
+                </a>
             </div>
             <div id="myGrid" class="ag-theme-alpine"></div>
         </div>
@@ -188,12 +191,12 @@ try {
             };
 
             //Fonction pour exporter le tableau en CSV
-            function onBtnExport() {
+            function downloadCSV() {
                 gridOptions.api.exportDataAsCsv();
             }
 
             //Fonctions pour imprimer le tableau
-            function onBtPrint() {
+            function imprimer() {
                 const api = gridOptions.api;
 
                 setPrinterFriendly(api);
