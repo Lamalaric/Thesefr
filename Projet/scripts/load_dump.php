@@ -30,7 +30,6 @@ include('../class/Dump.php');
     <div class="navbar">
         <ul>
             <li><a href="">Test dump</a></li>
-            <li><a href="../index.php">Menu</a></li>
             <li><a href="api.php">Rechercher une thèse</a></li>
         </ul>
     </div>

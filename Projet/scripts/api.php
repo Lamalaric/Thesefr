@@ -34,7 +34,6 @@ try {
     <div class="navbar">
         <ul>
             <li><a href="">Test dump</a></li>
-            <li><a href="../index.php">Menu</a></li>
             <li><a href="api.php">Rechercher une thèse</a></li>
         </ul>
     </div>
@@ -60,8 +59,8 @@ try {
             <div id="myGrid" class="ag-theme-alpine"></div>
         </div>
 
-
         <script>
+            //Définition des colonnes
             let columnDefs = [
                 {field: "Titre"},
                 {field: "Auteur"},
@@ -78,7 +77,7 @@ try {
                 }
             ];
 
-            //Ajout d'une ligne
+            //Ajout des lignes
             let rowData = <?php
                 //Formate la date en jour/mois/annee
                 function formatDate($date): string
@@ -143,6 +142,7 @@ try {
                 echo json_encode($emptyRow);
                 ?>;
 
+            //Paramètres de l'AgGrid
             let gridOptions = {
                 columnDefs: columnDefs,
                 defaultColDef: {
@@ -214,7 +214,7 @@ try {
                 api.setDomLayout(null);
             }
 
-            // setup the grid after the page has finished loading
+            //Affichage de l'AgGrid
             document.addEventListener('DOMContentLoaded', function() {
                 let gridDiv = document.querySelector('#myGrid');
                 new agGrid.Grid(gridDiv, gridOptions);
