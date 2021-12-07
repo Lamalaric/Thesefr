@@ -90,7 +90,6 @@ a:hover::after {
     position: relative;
 }
 .research .searchbar {
-    /*background-color: var(--clr-bg-light);*/
     padding: 10px;
     display: flex;
     justify-content: space-around;
@@ -129,6 +128,19 @@ a:hover::after {
     display: flex;
     justify-content: center;
     column-gap: 1em;
+}
+.buttons button {
+    color: var(--clr-text-dark);
+    font-family: Asap regular, sans-serif;
+    border: 1.5px solid var(--clr-accent-light);
+    font-size: .8em;
+    padding: 1em;
+    transition-duration: .5s;
+}
+.buttons button:hover {
+    cursor: pointer;
+    background-color: var(--clr-bg);
+
 }
 
 #myGrid {
