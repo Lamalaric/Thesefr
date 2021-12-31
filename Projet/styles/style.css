@@ -34,9 +34,12 @@ body {
     margin: 0; padding: 0;
 }
 main {
+    position: relative;
+    min-height: 100vh;
     width: 100%; height: 100%;
     display: grid;
     grid-template-columns: .65fr minmax(600px, 3fr) .65fr;
+    margin-bottom: 3em;
 }
 section {
     grid-column: 2;
@@ -82,37 +85,61 @@ a:hover::after {
 
 }
 
+footer {
+    background-color: var(--clr-accent-light);
+    bottom: 0;
+    width: 100%;
+    height: 2.5rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 /* ------------ PAGE RECHERCHE ------------ */
 /* Barre de recherche */
-.research {
+header {
+    background-color: var(--clr-accent-light);
     width: 100%;
-    height: auto;
-    position: relative;
+    padding: .8em 0;
 }
-.research .searchbar {
+.searchbar {
     padding: 10px;
     display: flex;
-    justify-content: space-around;
+    justify-content: flex-end;
     align-items: center;
+    column-gap: 5em;
     box-sizing: border-box;
 }
-.research .searchbar input[type=text] {
+.searchbar-and-select {
+    align-self: center;
+    display: flex;
+    justify-content: center;
+}
+.searchbar-and-select > * {
     border: 1.5px solid var(--clr-accent-light);
     color: var(--clr-text-dark);
     font-size: 1em;
-    width: 75%; height: 2em;
-    padding-left: 15px;
+    padding: 0 0 0 15px;
 }
-::placeholder {
+.searchbar input[type=text] {
+    width: 450px; height: 2em;
+    border-right: unset;
+}
+.searchbar select {
+    width: 150px; height: 2em;
+    border-left: unset;
+}
+::placeholder, select {
     color: var(--clr-text-dark);
     font-family: Asap regular, sans-serif;
 }
-.research .searchbar input[type=submit] {
-    background-color: var(--clr-accent-light);
+.searchbar input[type=submit] {
+    background-color: var(--clr-bg);
     color: var(--clr-text);
     font-family: Asap regular, sans-serif;
     font-size: 1em;
-    width: 8em; height: 2em;
+    width: 150px; height: 40px;
     cursor: pointer;
     border-style: none;
 }
@@ -123,13 +150,13 @@ a:hover::after {
     flex-direction: column;
 }
 
-.buttons {
+#buttons {
     margin-bottom: 2em;
-    display: flex;
+    display: none;
     justify-content: center;
     column-gap: 1em;
 }
-.buttons button {
+#buttons button {
     color: var(--clr-text-dark);
     font-family: Asap regular, sans-serif;
     border: 1.5px solid var(--clr-accent-light);
@@ -137,7 +164,7 @@ a:hover::after {
     padding: 1em;
     transition-duration: .5s;
 }
-.buttons button:hover {
+#buttons button:hover {
     cursor: pointer;
     background-color: var(--clr-bg);
 
@@ -148,4 +175,57 @@ a:hover::after {
 }
 #myGrid .ag-header-row {
     background-color: rgb(248, 248, 248);
+}
+.rag-green {
+    background-color: lightgreen;
+}
+.rag-amber {
+    background-color: lightsalmon;
+}
+
+.highcharts-figure,
+.highcharts-data-table table {
+    min-width: 310px;
+    max-width: 800px;
+    margin: 1em auto;
+}
+
+#highcharts {
+    height: 400px;
+}
+
+.highcharts-data-table table {
+    font-family: Verdana, sans-serif;
+    border-collapse: collapse;
+    border: 1px solid #ebebeb;
+    margin: 10px auto;
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+.highcharts-data-table caption {
+    padding: 1em 0;
+    font-size: 1.2em;
+    color: #555;
+}
+
+.highcharts-data-table th {
+    font-weight: 600;
+    padding: 0.5em;
+}
+
+.highcharts-data-table td,
+.highcharts-data-table th,
+.highcharts-data-table caption {
+    padding: 0.5em;
+}
+
+.highcharts-data-table thead tr,
+.highcharts-data-table tr:nth-child(even) {
+    background: #f8f8f8;
+}
+
+.highcharts-data-table tr:hover {
+    background: #f1f7ff;
 }

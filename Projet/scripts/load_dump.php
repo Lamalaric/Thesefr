@@ -48,6 +48,10 @@ include('../class/Dump.php');
 
         var_dump($allTheses);
 
+
+        exit();
+
+
         // VERIFIER SI CHAQUE LIGNE EST BIEN FORMATÉE
         for ($i=1, $iMax = count($allTheses); $i< $iMax; $i++) {
             //Une thèse contient au minimum : Auteur / Titre / Discipline
@@ -67,13 +71,24 @@ include('../class/Dump.php');
             $id_etablissement = $allTheses[$i]->getIdEtablissement();
             $discipline = $allTheses[$i]->getDiscipline();
             $statut = $allTheses[$i]->getStatut();
-            $date_inscription = $allTheses[$i]->getDateInscription();
-            $date_soutenance = $allTheses[$i]->getDateSoutenance();
+            if ($allTheses[$i]->getDateInscription() == '1970-01-01') {
+                $date_inscription = "";
+            } else $date_inscription = $allTheses[$i]->getDateSoutenance();
+            if ($allTheses[$i]->getDateSoutenance() == '1970-01-01') {
+                $date_soutenance = "";
+            } else $date_soutenance = $allTheses[$i]->getDateSoutenance();
             $langue_these = $allTheses[$i]->getLangueThese();
             $id_these = $allTheses[$i]->getIdThese();
             $accessible_online = $allTheses[$i]->getAccessibleOnline();
-            $date_publication_site = $allTheses[$i]->getDatePublicationSite();
-            $date_maj_site = $allTheses[$i]->getDateMajSite();
+            if ($allTheses[$i]->getDatePublicationSite() == '1970-01-01') {
+                $date_publication_site = "";
+            } else $date_publication_site = $allTheses[$i]->getDatePublicationSite();
+            if ($allTheses[$i]->getDatePublicationSite() == '1970-01-01') {
+                $date_publication_site = "";
+            } else $date_publication_site = $allTheses[$i]->getDatePublicationSite();
+            if ($allTheses[$i]->getDateMajSite() == '1970-01-01') {
+                $date_maj_site = "";
+            } else $date_maj_site = $allTheses[$i]->getDateMajSite();
             // Requête préparée
             $sql = "INSERT INTO these2 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             $req = $dbh->prepare($sql);

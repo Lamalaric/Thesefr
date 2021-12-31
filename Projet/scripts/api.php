@@ -21,35 +21,55 @@ try {
 <html lang="FR">
 <head>
     <title>Projet PHP</title>
-    <meta name="author" content="Amalaric Le Forestier" />
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="../styles/style.css" type="text/css" />
+    <meta name="author" content="Amalaric Le Forestier"/>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="../styles/style.css" type="text/css"/>
+    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="charts.js"></script>
     <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
-    <script src="https://code.highcharts.com/highcharts.src.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/data.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
 </head>
 
-<body>
+<body onload="displayButtons()">
 
-<nav>
-    <div class="navbar">
-        <ul>
-            <li><a href="">Test dump</a></li>
-            <li><a href="api.php">Rechercher une thèse</a></li>
-        </ul>
-    </div>
-</nav>
+<header class="research">
+    <form action="" method="post" class="searchbar" id="form-search">
+        <span class="searchbar-and-select">
+            <input type="text" name="searchbar" placeholder="Rechercher une thèse...">
+            <select name="choice-search" form="form-search">
+                <option value="all" selected>Tout</option>
+                <option value="auteur">Auteur</option>
+                <option value="titre">Titre</option>
+                <option value="discipline">Discipline</option>
+                <option value="directeur_these_pn">Directeur</option>
+            </select>
+        </span>
+
+        <input type="submit" name="submit-search" value="Rechercher">
+    </form>
+</header>
+
+<!--TODO
+Intégrer mes charts
+    - cartographie
+    - nb de thèses par année
+    - les disciplines qui ressortent le plus souvent
+    - nb de thèses en ligne
+    - nb de thèses En cours par rapport aux Soutenues
+
+Faire une map avec Leaflet, affichant le lieux des thèses. Il faut récupérer la localisation X,Y en s'aidant de l'ID thsèe ou je sais plus
+-->
 
 <main>
-    <section class="research">
-        <form action="" method="post" class="searchbar">
-            <input type="text" name="searchbar" placeholder="Rechercher une thèse...">
-            <input type="submit" name="submit-search" value="Rechercher">
-        </form>
-    </section>
+
     <section class="results">
 
         <div class="grid-wrapper">
-            <div class="buttons">
+            <div id="buttons">
                 <button onclick="imprimer()">Imprimer</button>
                 <button onclick="downloadCSV()">Exporter le csv</button>
                 <a href="../docs/results.json" download="Résultats">
@@ -60,104 +80,149 @@ try {
         </div>
 
         <script>
+            //Styles pour la couleur des cellules
+            const ragCellClassRules = {
+                'rag-green': (params) => params.value === 'Oui' || params.value === 'Soutenue',
+                'rag-amber': (params) => params.value === 'Non' || params.value === 'En cours'
+            };
+            function ragRenderer(params) {
+                return '<span class="rag-element">' + params.value + '</span>';
+            }
+
             //Définition des colonnes
             let columnDefs = [
-                {field: "Titre"},
-                {field: "Auteur"},
-                {field: "Directeur"},
-                {field: "Établissement"},
-                {field: "Statut"},
-                {
-                    headerName: 'Dates',
-                    children: [
-                        {field: "Inscription"},
-                        {field: "Soutenance"},
-                        {field: "Publication"}
-                    ]
-                }
+                {field: "titre", flex: 3, cellRenderer: function(params) {
+                    //Si le site est mis en ligne, alors on met le site en lien sur le titre
+                    if (params.data) {
+                        if (params.data.online === "Oui") {
+                            return "<a href='theses.fr/"+params.data.id+"/document' style='color: #0000EE;'>"+params.data.titre+"</a>";
+                        }
+                        return params.data.titre;
+                    }
+                }},
+                {field: "id", hide: true},
+                {field: "auteur", flex: 2},
+                {field: "Directeur", flex: 1.5},
+                {field: "Établissement", flex: 1},
+                {field: "online", flex: .8, cellClassRules: ragCellClassRules, cellRenderer: ragRenderer},
+                {field: "Statut", flex: .8, cellClassRules: ragCellClassRules, cellRenderer: ragRenderer},
+                {field: "Soutenance", flex: 1}
             ];
 
             //Ajout des lignes
-            let rowData = <?php
-                //Formate la date en jour/mois/annee
-                function formatDate($date): string
-                {
-                    $date = explode("-", $date);
-                    return $date[2]."/".$date[1]."/".$date[0];
-                }
+            <?php
 
-                //Exécute une requête préparée en passant un tableau de valeurs
-                $recherche = $_POST['searchbar'];
-                $recherche = "%".$recherche."%";
-                $sth = $dbh->prepare('SELECT * FROM these WHERE auteur LIKE :recherche;');
-                $sth->bindParam(':recherche', $recherche);
+            // ----- PARTIE AGGRID -----
 
-                // Insertion de la requête SQL dans la BDD
-                $rows = array();
-                if ($sth->execute()) {
-                    //Si ça se passe bien alors on crée la ligne du tableau
-                    $result = $sth->fetchAll();
-                    foreach ($result as $row) {
-                        //Formatage des lignes nécessaires
-                        $toExclude = array(",", ".");
-                        str_replace($toExclude,"", $row[0]);
-                        str_replace($toExclude,"", $row[2]);
-                        if (count(explode("-", $row[10])) == 3) $row[10] = formatDate($row[10]);
-                        if (count(explode("-", $row[11])) == 3) $row[11] = formatDate($row[11]);
-                        if (count(explode("-", $row[15])) == 3) $row[15] = formatDate($row[15]);
-                        if ($row[9]=='enCours') $row[9] = 'En cours';
-                        else if ($row[9]=='soutenue') $row[9] = 'Soutenue';
-                        //Création de la ligne à donner à l'AgGrid
-                        $formatedRow = array(
-                            "Titre"=>$row[2],
-                            "Auteur"=>$row[0],
-                            "Directeur"=>$row[3],
-                            "Établissement"=>$row[6],
-                            "Statut"=>$row[9],
-                            "Inscription"=>$row[10],
-                            "Soutenance"=>$row[11],
-                            "Publication"=>$row[15]
-                        );
-                        array_push($rows, $formatedRow);
+            //Formate la date en jour/mois/annee
+            function formatDate($date): string
+            {
+                $date = explode("-", $date);
+                return $date[2]."/".$date[1]."/".$date[0];
+            }
+
+            //Requête préparée
+            $recherche = $_POST['searchbar'];
+            $recherche = "%".$recherche."%";
+            $type = $_POST['choice-search'];
+            if ($type == 'all') {
+                $sth = $dbh->prepare('SELECT * FROM these WHERE 
+                      auteur LIKE :recherche OR
+                      titre LIKE :recherche OR
+                      auteur LIKE :recherche OR
+                      directeur_these_pn LIKE :recherche;');
+            } else $sth = $dbh->prepare('SELECT * FROM these WHERE '.$type.' LIKE :recherche;');
+            $sth->bindParam(':recherche', $recherche);
+
+            // Insertion de la requête SQL dans la BDD
+            $rows = array();
+            $rowHC = array();
+            if ($sth->execute()) {
+                //Si ça se passe bien alors on crée la ligne du tableau
+                $result = $sth->fetchAll();
+                foreach ($result as $row) {
+                    //Formatage des lignes nécessaires
+                    $toExclude = array(",", ".");
+                    str_replace($toExclude,"", $row[0]);
+                    str_replace($toExclude,"", $row[2]);
+                    if (count(explode("-", $row[11])) == 3) $row[11] = formatDate($row[11]);
+                    if ($row[9]=='enCours') $row[9] = 'En cours';
+                    else if ($row[9]=='soutenue') $row[9] = 'Soutenue';
+                    $row[14] = ucfirst($row[14]);
+                    //Création de la ligne à donner à l'AgGrid
+                    $formatedRow = array(
+                        "titre"=>$row[2],
+                        "id"=>$row[13],
+                        "auteur"=>$row[0],
+                        "Directeur"=>$row[3],
+                        "Établissement"=>$row[6],
+                        "Statut"=>$row[9],
+                        "online"=>$row[14],
+                        "Soutenance"=>$row[11],
+                    );
+                    array_push($rows, $formatedRow);
+
+
+
+                    // ----- PARTIE HIGHCHARTS -----
+
+                    // !!! problème ici, les index d'array ne s'incrémentent pas
+
+                    //On ajoute aussi des données aux graphiques Highcharts en remplissant un array
+                    $annee = explode("/", $row[11])[2];
+                    $exist = false;
+
+                    foreach($rowHC as $elem) {
+                        //Si on a déjà une entrée pour cette année, alors on incrémente le nombre de thèses à cette année
+//                        if ($elem == $annee) {
+////                            $elem[1]++;
+////                            $exist = true;
+//                            continue;
+//                        }
+                        //On regarde si XXX == annee
+                        //Puis on fait annee => ++
+                        if (array_key_exists($annee, $elem)) {
+//                            $elem[$annee] => ++;
+                            $exist = true;
+                        }
+                    }
+                    //Si on a zéro entrée pour cette année, on en créer une nouvelle
+                    if ($exist == false) {
+                        $toPush = array($annee => 1);
+                        array_push($rowHC, $toPush);
                     }
                 }
-                $searchResult = json_encode($rows);
+            }
 
-                //On écrit dans un .json les lignes retournées
-                $response['posts'] = $rows;
-                $fp = fopen('../docs/results.json', 'w');
-                fwrite($fp, json_encode($rows));
-                fclose($fp);
+            //On écrit dans un .json les lignes retournées
+            $response['posts'] = $rows;
+            $fp = fopen('../docs/results.json', 'w');
+            fwrite($fp, json_encode($rows));
+            fclose($fp);
+            ?>
 
 
-                $emptyRow = array(0=> array(
-                    "Titre"=>"",
-                    "Auteur"=>"",
-                    "Directeur"=>"",
-                    "Établissement"=>"",
-                    "Statut"=>"",
-                    "Inscription"=>"",
-                    "Soutenance"=>"",
-                    "Publication"=>""));
-                echo json_encode($emptyRow);
-                ?>;
+            //Construire mes data genre :
+            // [2012, 3]
+            // [2015, 5]
+            let datas = [<?php echo json_encode($rowHC) ?>];
+            console.log("Data =");
+            console.log(datas);
+
 
             //Paramètres de l'AgGrid
             let gridOptions = {
                 columnDefs: columnDefs,
                 defaultColDef: {
-                    flex: 1,
-                    minWidth: 150,
+                    flex: 2,
                     filter: true,
                     sortable: true,
                     resizable: true,
                 },
 
-                rowData: rowData,
-
                 rowGroupPanelShow: 'always',
                 pagination: true,
-                paginationPageSize: 15,
+                paginationPageSize: 20,
                 popupParent: document.body,
                 overlayLoadingTemplate:
                     '<span class="ag-overlay-loading-center">Chargement des lignes...</span>',
@@ -165,26 +230,18 @@ try {
                 //Chargement des lignes optimisé
                 rowBuffer: 0,
                 rowSelection: 'multiple',
-                // tell grid we want virtual row model type
                 rowModelType: 'infinite',
-                // how big each page in our page cache will be, default is 100
                 cacheBlockSize: 100,
-                // how many extra blank rows to display to the user at the end of the dataset,
-                // which sets the vertical scroll and then allows the grid to request viewing more rows of data.
-                // default is 1, ie show 1 row.
                 cacheOverflowSize: 2,
-                // how many server side requests to send at a time. if user is scrolling lots, then the requests
-                // are throttled down
                 maxConcurrentDatasourceRequests: 1,
-                // how many rows to initially show in the grid. having 1 shows a blank row, so it looks like
-                // the grid is loading from the users perspective (as we have a spinner in the first col)
                 infiniteInitialRowCount: 1000,
-                // how many pages to store in cache. default is undefined, which allows an infinite sized cache,
-                // pages are never purged. this should be set for large data to stop your browser from getting
-                // full of data
                 maxBlocksInCache: 10
             };
 
+            //Changer la couleur de la case Online selon Oui ou Non
+            function cellClass(params) {
+                return params.value === 'Oui' ? 'rag-green' : 'rag-amber';
+            }
             //Fonction pour exporter le tableau en CSV
             function downloadCSV() {
                 gridOptions.api.exportDataAsCsv();
@@ -247,7 +304,17 @@ try {
             });
         </script>
     </section>
+
+    <section class="stats">
+        <figure class="highcharts-figure">
+            <div id="highcharts"></div>
+        </figure>
+    </section>
 </main>
+
+<footer>
+    <p>Amalaric Le Forestier</p>
+</footer>
 
 </body>
 </html>
