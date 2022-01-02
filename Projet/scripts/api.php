@@ -62,6 +62,7 @@ Intégrer mes charts
 
 Faire une map avec Leaflet, affichant le lieux des thèses. Il faut récupérer la localisation X,Y en s'aidant de l'ID thsèe ou je sais plus
 https://www.datavis.fr/index.php?page=leaflet-firstmap
+https://opencagedata.com/tutorials/geocode-in-php
 -->
 
 <main>
@@ -96,6 +97,13 @@ https://www.datavis.fr/index.php?page=leaflet-firstmap
     </section>
 
     <script>
+        //Initialisation de la carte
+        let map = L.map('map').setView([47.009, 2.538], 6);
+        let osmLayer = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        });
+
         //Styles pour la couleur des cellules
         const ragCellClassRules = {
             'rag-green': (params) => params.value === 'Oui' || params.value === 'Soutenue',
@@ -261,15 +269,11 @@ https://www.datavis.fr/index.php?page=leaflet-firstmap
         fclose($fp);
         ?>
 
-        let map = L.map('map').setView([47.009, 2.538], 6); // LIGNE 18
-
-        let osmLayer = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', { // LIGNE 20
-            attribution: '© OpenStreetMap contributors',
-            maxZoom: 19
-        });
-
-        L.marker([48.5, -0.09]).addTo(map)
-            .bindPopup('Le texte du marker<br> On peut y mettre du code HTML');
+        //il faut que dans le php, ligne par ligne, j'ajoute les coord de l'établissement de la ligne a une array qui les
+        //contiendra toutes.
+        //ensuite à la fin dans le js, jet boucle dessus avec la ligne qu'il y a juste ci-dessous:
+        //(comment récupérer les coordonées ??)
+        L.marker([48.5, -0.09]).addTo(map);
 
         map.addLayer(osmLayer);
 
