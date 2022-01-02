@@ -1,3 +1,4 @@
+/*
 document.addEventListener('DOMContentLoaded', function() {
     // Create the chart
     Highcharts.chart('highcharts', {
@@ -13,9 +14,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         },
         xAxis: {
-            type: 'category'
+            type: 'category',
+            labels: {
+                rotation: -45,
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif'
+                }
+            }
         },
         yAxis: {
+            min: 0,
             title: {
                 text: 'Nombre de thèse'
             }
@@ -23,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         legend: {
             enabled: false
         },
-        plotOptions: {
+        /!*plotOptions: {
             series: {
                 borderWidth: 0,
                 dataLabels: {
@@ -31,8 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     format: '{point.y}'
                 }
             }
-        },
-
+        },*!/
         tooltip: {
             headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
             pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b> thèses<br/>'
@@ -40,10 +48,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         series: [
             {
-                name: "Browsers",
+                name: "Population",
                 colorByPoint: true,
                 data: datas
             }
         ],
     });
-})
+})*/
