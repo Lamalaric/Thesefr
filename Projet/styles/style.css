@@ -44,6 +44,14 @@ main {
 section {
     grid-column: 2;
     margin-top: 2em;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+section.stats {
+    grid-column: 1/4;
+    width: 100%;
+    height: 100%;
 }
 section h2 {
     color: var(--clr-text-dark);
@@ -175,6 +183,7 @@ header {
 
 }
 
+/* AgGrid */
 #myGrid {
     flex: 1 1 0;
 }
@@ -188,11 +197,22 @@ header {
     background-color: lightsalmon;
 }
 
+/* HighCharts */
 .highcharts-figure,
 .highcharts-data-table table {
-    min-width: 310px;
-    max-width: 800px;
-    margin: 1em auto;
+    min-width: 500px;
+    margin: 1em 10em;
+}
+
+.highcharts-figure > div {
+    width: 100%;
+}
+.camamberts {
+    display: flex;
+    column-gap: 1px;
+}
+.camamberts > div {
+    width: 50%;
 }
 
 #highcharts {
@@ -233,4 +253,15 @@ header {
 
 .highcharts-data-table tr:hover {
     background: #f1f7ff;
+}
+
+/* Cartographie */
+.map-container {
+    width: 75%;
+    height: 750px;
+    margin: 1em auto 5em;
+}
+#map {
+    width: 100%;
+    height: 100%;
 }
