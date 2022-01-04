@@ -202,6 +202,7 @@ https://opencagedata.com/tutorials/geocode-in-php
             array('En cours', 0),
             array('Soutenue', 0)
         );
+        $lstCodeEtablissement = array();
 
         if ($sth->execute()) {
             //Si ça se passe bien alors on crée la ligne du tableau
@@ -228,6 +229,7 @@ https://opencagedata.com/tutorials/geocode-in-php
                 );
                 array_push($rows, $formatedRow);
 
+                array_push($lstCodeEtablissement, $row[7]);
 
 
                 // ----- PARTIE HIGHCHARTS -----
@@ -269,11 +271,31 @@ https://opencagedata.com/tutorials/geocode-in-php
         fclose($fp);
         ?>
 
-        //il faut que dans le php, ligne par ligne, j'ajoute les coord de l'établissement de la ligne a une array qui les
-        //contiendra toutes.
-        //ensuite à la fin dans le js, jet boucle dessus avec la ligne qu'il y a juste ci-dessous:
-        //(comment récupérer les coordonées ??)
-        L.marker([48.5, -0.09]).addTo(map);
+
+        //Récupération des coord de chaque établissement
+        <?php
+            $lstCoords = array();
+            //Pour chaque code détablissement...
+            foreach ($lstCodeEtablissement as $codeEtablissement) {
+                $codeEtablissement = (string) $codeEtablissement;
+                if ($codeEtablissement == "") continue;
+                //Récupération du json
+                $content = file_get_contents("https://data.enseignementsup-recherche.gouv.fr/api/records/1.0/search/?dataset=fr-esr-principaux-etablissements-enseignement-superieur&q={$codeEtablissement}&rows=10&fileds=identifiant_idref&fields=identifiant_idref,coordonnees");
+                $json = json_decode($content, true);
+                //Récupération des coordonnées à partir du json
+                if ($json['records'] == []) continue;
+                $coordX = $json['records'][0]['fields']['coordonnees'][0];
+                $coordY = $json['records'][0]['fields']['coordonnees'][1];
+
+                array_push($lstCoords, array($coordX, $coordY));
+            }
+        ?>
+        //Ajout d'un marker sur la map pour chaque coordonnée d'établissement
+        let lstCoords = <?php echo json_encode($lstCoords); ?>;
+        lstCoords.forEach(elem => {
+            L.marker(elem).addTo(map);
+        })
+
 
         map.addLayer(osmLayer);
 
