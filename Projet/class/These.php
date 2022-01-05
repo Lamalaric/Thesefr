@@ -60,6 +60,10 @@ class These
         $this->date_maj_site = $date_maj_site;
     }
 
+//    public function insertDB() {
+//        return "INSERT INTO these2 VALUES (getAu)";
+//    }
+
     /**
      * @return mixed
      */

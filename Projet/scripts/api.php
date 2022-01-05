@@ -1,7 +1,11 @@
 <?php
+set_time_limit(0);
+ini_set('memory_limit', '-1');
+
 //include('../class/Dump.php');
 //include('../connexion.php');
 //include('coord.php');
+include('load_dump.php');
 //Remove le warning du port
 error_reporting(E_ALL ^ E_WARNING);
 
