@@ -1,6 +1,7 @@
 <?php
 //include('../class/Dump.php');
 //include('../connexion.php');
+//include('coord.php');
 //Remove le warning du port
 error_reporting(E_ALL ^ E_WARNING);
 
@@ -159,15 +160,15 @@ https://opencagedata.com/tutorials/geocode-in-php
                     }
                 }},
             {field: "id", hide: true},
-            {field: "auteur", flex: 2},
+            {field: "auteur", flex: 1.3},
             {field: "Directeur", flex: 1.5},
-            {field: "Établissement", flex: 1},
+            {field: "Établissement", flex: 1.5},
             {field: "online", flex: .8, cellClassRules: ragCellClassRules, cellRenderer: ragRenderer},
             {field: "Statut", flex: .8, cellClassRules: ragCellClassRules, cellRenderer: ragRenderer},
             {field: "Soutenance", flex: 1}
         ];
 
-        //Ajout des lignes
+        //Calcul des résultats
         <?php
         // ----- PARTIE AGGRID -----
 
@@ -202,8 +203,9 @@ https://opencagedata.com/tutorials/geocode-in-php
             array('En cours', 0),
             array('Soutenue', 0)
         );
-        $lstCodeEtablissement = array();
+        $lstCoords = array();
 
+        //Résultats de la requête
         if ($sth->execute()) {
             //Si ça se passe bien alors on crée la ligne du tableau
             $result = $sth->fetchAll();
@@ -229,13 +231,12 @@ https://opencagedata.com/tutorials/geocode-in-php
                 );
                 array_push($rows, $formatedRow);
 
-                array_push($lstCodeEtablissement, $row[7]);
-
 
                 // ----- PARTIE HIGHCHARTS -----
                 //Construction des datas pour les graphiques HighCharts :
 
                 //Pour le graphe nb de thèses:
+                if ($row[11] == '01/01/1970') continue;    //On ignore la date 1970 par défaut
                 $annee = explode("/", $row[11])[2];
                 $exist = false;
                 for ($i=0; $i<count($rowHCtheses); $i++) {
@@ -257,7 +258,26 @@ https://opencagedata.com/tutorials/geocode-in-php
                 $indexSoutenue = $row[9] == 'Soutenue' ? 1 : 0;
                 //On incrémente le nombre de thèses correspondant à soutenue Oui ou Non
                 $rowHCsoutenue[$indexSoutenue][1] += 1;
+
+
+                // ----- PARTIE CARTOGRAPHIE -----
+                $test = '';
+
+                $sql = "SELECT coord_x, coord_y FROM coordonnees WHERE id_etablissement='$row[7]';";
+                $req = $dbh->prepare($sql);
+
+                if ($req->execute()) {
+                    while ($row = $req->fetch(PDO::FETCH_ASSOC)) {
+                        array_push($lstCoords, array($row['coord_x'], $row['coord_y']));
+                        $test = $row;
+                    }
+
+                } else {
+                    $test = 'non';
+                    echo $req->errorInfo().'<br>';
+                }
             }
+
             //Tri du graphe de nombre de thèses par année
             usort($rowHCtheses, function ($item1, $item2) {
                 return $item1[0] <=> $item2[0];
@@ -270,27 +290,10 @@ https://opencagedata.com/tutorials/geocode-in-php
         fwrite($fp, json_encode($rows));
         fclose($fp);
         ?>
+        console.log(<?php echo json_encode($test); ?>)
 
 
-        //Récupération des coord de chaque établissement
-        <?php
-            $lstCoords = array();
-            //Pour chaque code détablissement...
-            foreach ($lstCodeEtablissement as $codeEtablissement) {
-                $codeEtablissement = (string) $codeEtablissement;
-                if ($codeEtablissement == "") continue;
-                //Récupération du json
-                $content = file_get_contents("https://data.enseignementsup-recherche.gouv.fr/api/records/1.0/search/?dataset=fr-esr-principaux-etablissements-enseignement-superieur&q={$codeEtablissement}&rows=10&fileds=identifiant_idref&fields=identifiant_idref,coordonnees");
-                $json = json_decode($content, true);
-                //Récupération des coordonnées à partir du json
-                if ($json['records'] == []) continue;
-                $coordX = $json['records'][0]['fields']['coordonnees'][0];
-                $coordY = $json['records'][0]['fields']['coordonnees'][1];
-
-                array_push($lstCoords, array($coordX, $coordY));
-            }
-        ?>
-        //Ajout d'un marker sur la map pour chaque coordonnée d'établissement
+        //Ajout des marker sur la map
         let lstCoords = <?php echo json_encode($lstCoords); ?>;
         lstCoords.forEach(elem => {
             L.marker(elem).addTo(map);
@@ -301,12 +304,14 @@ https://opencagedata.com/tutorials/geocode-in-php
 
         //Paramètres de l'AgGrid
         let gridOptions = {
+            rowHeight: 100,
             columnDefs: columnDefs,
             defaultColDef: {
                 flex: 2,
                 filter: true,
                 sortable: true,
                 resizable: true,
+                wrapText: true,
             },
 
             rowGroupPanelShow: 'always',

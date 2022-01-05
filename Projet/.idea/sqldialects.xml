@@ -2,6 +2,7 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/scripts/api.php" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/scripts/coord.php" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/scripts/load_dump.php" dialect="MySQL" />
   </component>
 </project>
