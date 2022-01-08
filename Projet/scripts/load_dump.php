@@ -143,7 +143,6 @@ include('../class/Dump.php');
                     var_dump($date_inscription);
                 }
                 $i++;
-                if ($i == 5) exit();
             }
             fclose($handle);
         }
