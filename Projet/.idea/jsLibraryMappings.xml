@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="PROJECT" libraries="{accessibility, ag-grid-community, data, export-data, exporting, highcharts, highstock, leaflet, series-label}" />
+    <file url="PROJECT" libraries="{45e38e596f, accessibility, ag-grid-community, data, export-data, exporting, highcharts, highstock, leaflet, series-label, variable-pie}" />
   </component>
 </project>

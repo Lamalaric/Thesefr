@@ -13,5 +13,7 @@
     <orderEntry type="library" name="series-label" level="application" />
     <orderEntry type="library" name="highstock" level="application" />
     <orderEntry type="library" name="leaflet" level="application" />
+    <orderEntry type="library" name="45e38e596f" level="application" />
+    <orderEntry type="library" name="variable-pie" level="application" />
   </component>
 </module>
