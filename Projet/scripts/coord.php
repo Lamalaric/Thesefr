@@ -20,37 +20,37 @@ try {
 
 
 //Requête préparée
-$sth = $dbh->prepare('SELECT DISTINCT id_etablissement FROM these;');
+$sth = $dbh->prepare('SELECT DISTINCT id_etablissement,etablissement_soutenance FROM these2;');
 
 //Résultats de la requête
 if ($sth->execute()) {
     //Si ça se passe bien alors on crée la ligne du tableau
     $result = $sth->fetchAll();
+    $lstCodes = array();
     foreach ($result as $row) {
         if ($row[0] == "") continue;
 
         $lstCoords = array();
         //Pour chaque code détablissement...
         $codeEtablissement = (string) $row[0];
-        //Récupération du json
-        $content = file_get_contents("https://data.enseignementsup-recherche.gouv.fr/api/records/1.0/search/?dataset=fr-esr-principaux-etablissements-enseignement-superieur&q={$codeEtablissement}&rows=10&fileds=identifiant_idref&fields=identifiant_idref,coordonnees");
-        $json = json_decode($content, true);
-        //Récupération des coordonnées à partir du json
-        if ($json['records'] == []) continue;
-        $coordX = $json['records'][0]['fields']['coordonnees'][0];
-        $coordY = $json['records'][0]['fields']['coordonnees'][1];
+        if (!in_array($codeEtablissement, $lstCodes)) {     //Si on a déjà fait pour ce code on passe
+            //Récupération du json
+            $content = file_get_contents("https://data.enseignementsup-recherche.gouv.fr/api/records/1.0/search/?dataset=fr-esr-principaux-etablissements-enseignement-superieur&q={$codeEtablissement}&rows=10&fileds=identifiant_idref&fields=identifiant_idref,coordonnees");
+            $json = json_decode($content, true);
+            //Récupération des coordonnées à partir du json
+            if ($json['nhits'] == 0) continue;
+            $coordX = $json['records'][0]['fields']['coordonnees'][0];
+            $coordY = $json['records'][0]['fields']['coordonnees'][1];
+            $etablissement = $row[1];
 
-        $sql = "INSERT INTO coordonnees VALUES ('$codeEtablissement',$coordX,$coordY);";
-        $req = $dbh->prepare($sql);
+            $sql = "INSERT INTO coordonnees VALUES ('$codeEtablissement',$coordX,$coordY,'$etablissement');";
+            $req = $dbh->prepare($sql);
 
-        if ($req->execute()) {
-            continue;
-        } else {
-            echo $req->errorInfo().'<br>';
-            echo $codeEtablissement."---".$coordX."---".$coordY.'<br>';
-            echo gettype($codeEtablissement).'<br><br>';
+            if ($req->execute()) {
+                continue;
+            }
         }
-        break;
+        array_push($lstCodes, $codeEtablissement);
     }
 }
 
