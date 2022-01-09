@@ -46,7 +46,7 @@ try {
 
 </head>
 
-<body onload="displayButtons()">
+<body onload="displayButton()">
 
 <header>
     <img src="../images/logo.png" alt="Thesesfr" class="logo">
@@ -57,6 +57,7 @@ try {
                 <option value="all" selected>Tout</option>
                 <option value="auteur">Auteur</option>
                 <option value="titre">Titre</option>
+                <option value="id_these">ID thèse</option>
                 <option value="discipline">Discipline</option>
                 <option value="directeur_these_pn">Directeur</option>
             </select>
@@ -66,19 +67,10 @@ try {
     </form>
 </header>
 
-<!--TODO
-Intégrer mes charts
-    - cartographie
-    - les disciplines qui ressortent le plus souvent
-
-Faire une map avec Leaflet, affichant le lieux des thèses. Il faut récupérer la localisation X,Y en s'aidant de l'ID thsèe ou je sais plus
-https://www.datavis.fr/index.php?page=leaflet-firstmap
-https://opencagedata.com/tutorials/geocode-in-php
--->
 
 <main id="main" style="min-height: 100vh;">
 
-    <section id="welcome">
+    <section id="welcome" style="display:block;">
         <h1>Thesesfr</h1>
         <div>
             <div class="suggest">
@@ -86,6 +78,14 @@ https://opencagedata.com/tutorials/geocode-in-php
                 <p>
                     Theses.fr est un projet réalisé dans le cadre d'un projet PHP pour mon 3ème semestre en DUT Informatique de Marne-la-Vallée.<br><br>
                     Commencez par rechercher une thèse selon le critère de votre choix dans la barre de recherche en haut a droite
+                </p>
+            </div>
+            <div class="notice">
+                <h2>Recommandation</h2>
+                <p>
+                    Il se peut que vous rencontriez un problème concernant le tableau des résultats lors de votre première recherche, pour cause d'un problème côté serveur.<br><br>
+                    Prenez le temps d'aller voir le README associé à ce projet, et prendre pleinement connaissance de ce projet ainsi que de la façon pour corriger ce problème !<br>
+                    Voir le README : <a href="https://github.com/Lamalaric/Thesefr/tree/master/Projet" target="_blank">GitHub Repository</a>
                 </p>
             </div>
             <div class="mentionsL">
@@ -241,6 +241,7 @@ https://opencagedata.com/tutorials/geocode-in-php
             $sth = $dbh->prepare('SELECT * FROM these2 WHERE 
                       auteur LIKE :recherche OR
                       titre LIKE :recherche OR
+                      id_these LIKE :recherche OR
                       auteur LIKE :recherche OR
                       directeur_these_pn LIKE :recherche;');
         } else $sth = $dbh->prepare('SELECT * FROM these2 WHERE '.$type.' LIKE :recherche;');
