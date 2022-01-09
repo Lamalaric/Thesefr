@@ -1,6 +1,7 @@
 //Masquer tout l'affichage si aucune recherche n'a déjà été effectuée
-function displayButtons() {
+function displayButton() {
     let main = document.getElementById("main");
+    let intro = document.getElementById("welcome");
     let grid = document.getElementsByClassName("ag-root-wrapper");
     let results = document.getElementById("results");
     let stats = document.getElementById("stats");
@@ -11,6 +12,7 @@ function displayButtons() {
         stats.style.display = "none";
     } else {
         main.style.minHeight = "auto";
+        intro.style.display = "none";
         results.style.display = "flex";
         stats.style.display = "flex";
     }
